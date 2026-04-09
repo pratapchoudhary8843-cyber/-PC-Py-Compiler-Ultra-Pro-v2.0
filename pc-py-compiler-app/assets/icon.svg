@@ -1,0 +1,44 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0a0e27;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#1a1f3a;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#00f3ff;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ff006e;stop-opacity:1" />
+        </linearGradient>
+        <filter id="blur">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+        </filter>
+    </defs>
+    
+    <!-- Background -->
+    <rect width="512" height="512" rx="80" fill="url(#bg)"/>
+    
+    <!-- Glow effect -->
+    <circle cx="256" cy="256" r="180" fill="url(#glow)" opacity="0.15" filter="url(#blur)"/>
+    
+    <!-- Python logo inspired design -->
+    <g transform="translate(256, 256)">
+        <!-- Top snake (blue/cyan) -->
+        <path d="M -80,-100 L -80,-50 Q -80,-30 -60,-30 L 60,-30 Q 80,-30 80,-10 L 80,40" 
+              fill="none" stroke="#00f3ff" stroke-width="45" stroke-linecap="round"/>
+        
+        <!-- Bottom snake (pink) -->
+        <path d="M 80,100 L 80,50 Q 80,30 60,30 L -60,30 Q -80,30 -80,10 L -80,-40" 
+              fill="none" stroke="#ff006e" stroke-width="45" stroke-linecap="round"/>
+        
+        <!-- Eyes -->
+        <circle cx="-60" cy="-70" r="12" fill="#0a0e27"/>
+        <circle cx="60" cy="70" r="12" fill="#0a0e27"/>
+    </g>
+    
+    <!-- Code brackets decoration -->
+    <text x="100" y="420" font-family="JetBrains Mono, monospace" font-size="80" 
+          fill="url(#glow)" opacity="0.6" font-weight="bold">&lt;/&gt;</text>
+    
+    <!-- Border -->
+    <rect width="512" height="512" rx="80" fill="none" stroke="url(#glow)" stroke-width="4" opacity="0.5"/>
+</svg>
