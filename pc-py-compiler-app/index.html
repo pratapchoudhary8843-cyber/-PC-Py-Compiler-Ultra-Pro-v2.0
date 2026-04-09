@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Py Compiler Ultra Pro - Advanced Python IDE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght:600;900&family=JetBrains+Mono:wght@400;600&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #1a1f3a;
+            --bg-tertiary: #252b4a;
+            --bg-card: #1e2439;
+            --accent-cyan: #00f3ff;
+            --accent-pink: #ff006e;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-yellow: #fbbf24;
+            --text-primary: #e0e7ff;
+            --text-secondary: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border: rgba(148, 163, 184, 0.2);
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 243, 255, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 0, 110, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
+            z-index: -1;
+            animation: bgPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        header {
+            background: rgba(26, 31, 58, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .version {
+            background: var(--accent-purple);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar {
+            background: rgba(26, 31, 58, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            height: fit-content;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .sample-btn {
+            width: 100%;
+            background: rgba(37, 43, 74, 0.6);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+        }
+
+        .sample-btn:hover {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: var(--accent-cyan);
+            transform: translateX(5px);
+        }
+
+        .sample-btn.active {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+            border-color: transparent;
+        }
+
+        .package-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: rgba(37, 43, 74, 0.4);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .package-name {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-purple);
+        }
+
+        .package-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .editor-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .toolbar {
+            background: rgba(26, 31, 58, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .workspace {
+            background: rgba(26, 31, 58, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+        }
+
+        .editor-panel, .output-panel {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+        }
+
+        .output-panel {
+            border-right: none;
+        }
+
+        .panel-header {
+            background: rgba(10, 14, 39, 0.5);
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .icon-btn:hover {
+            background: rgba(0, 243, 255, 0.2);
+            color: var(--accent-cyan);
+        }
+
+        .editor-content {
+            display: flex;
+            flex: 1;
+            overflow: auto;
+        }
+
+        #code-editor {
+            flex: 1;
+            background: rgba(10, 14, 39, 0.3);
+            border: none;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            resize: none;
+            line-height: 1.6;
+            outline: none;
+        }
+
+        #output-area {
+            flex: 1;
+            background: rgba(10, 14, 39, 0.5);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--success);
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        .output-tabs {
+            display: flex;
+            background: rgba(10, 14, 39, 0.3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .output-tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .output-tab:hover {
+            color: var(--text-primary);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .output-tab.active {
+            color: var(--accent-cyan);
+            border-bottom-color: var(--accent-cyan);
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .output-content {
+            display: none;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .output-content.active {
+            display: block;
+        }
+
+        #plot-area {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: rgba(10, 14, 39, 0.5);
+        }
+
+        .plot-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .plot-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 243, 255, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 243, 255, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(37, 43, 74, 0.8);
+            color: var(--text-primary);
+            border: 1px solid var(--accent-pink);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 0, 110, 0.2);
+            border-color: var(--accent-pink);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), var(--accent-green));
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .status-bar {
+            background: rgba(26, 31, 58, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.6;
+                transform: scale(1.2);
+            }
+        }
+
+        .status-dot.warning {
+            background: var(--warning);
+            box-shadow: 0 0 10px var(--warning);
+        }
+
+        .status-dot.error {
+            background: var(--error);
+            box-shadow: 0 0 10px var(--error);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 243, 255, 0.3);
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(10, 14, 39, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 243, 255, 0.1);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            animation: slideInRight 0.3s ease-out;
+            max-width: 400px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .notification.success {
+            border-color: var(--success);
+        }
+
+        .notification.error {
+            border-color: var(--error);
+        }
+
+        .notification.warning {
+            border-color: var(--warning);
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .editor-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .toolbar {
+                justify-content: center;
+            }
+
+            .btn {
+                font-size: 0.75rem;
+                padding: 0.6rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-section">
+                <h1>PC Py Compiler Ultra Pro</h1>
+                <span class="version">v2.0</span>
+            </div>
+            <div class="header-controls">
+                <button class="btn btn-small btn-secondary" id="upload-btn">
+                    📁 Upload
+                </button>
+                <button class="btn btn-small btn-secondary" id="download-btn">
+                    💾 Download
+                </button>
+                <button class="btn btn-small btn-secondary" id="settings-btn">
+                    ⚙️ Settings
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">📚 Code Samples</h3>
+                    <button class="sample-btn" data-sample="basic">🐍 Basic Python</button>
+                    <button class="sample-btn" data-sample="numpy">🔢 NumPy Arrays</button>
+                    <button class="sample-btn" data-sample="pandas">📊 Pandas DataFrame</button>
+                    <button class="sample-btn" data-sample="matplotlib">📈 Matplotlib Plot</button>
+                    <button class="sample-btn" data-sample="seaborn">🎨 Seaborn Viz</button>
+                    <button class="sample-btn" data-sample="algorithm">⚡ Algorithms</button>
+                    <button class="sample-btn" data-sample="ml">🤖 Machine Learning</button>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">📦 Packages</h3>
+                    <div class="package-item">
+                        <span class="package-name">numpy</span>
+                        <span class="package-status"></span>
+                    </div>
+                    <div class="package-item">
+                        <span class="package-name">pandas</span>
+                        <span class="package-status"></span>
+                    </div>
+                    <div class="package-item">
+                        <span class="package-name">matplotlib</span>
+                        <span class="package-status"></span>
+                    </div>
+                    <div class="package-item">
+                        <span class="package-name">scikit-learn</span>
+                        <span class="package-status"></span>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="editor-area">
+                <div class="toolbar">
+                    <button class="btn btn-primary" id="run-btn">
+                        ▶ Run Code
+                    </button>
+                    <button class="btn btn-secondary" id="clear-btn">
+                        🗑️ Clear Output
+                    </button>
+                    <button class="btn btn-secondary" id="format-btn">
+                        ✨ Format Code
+                    </button>
+                    <button class="btn btn-success" id="install-pkg-btn">
+                        📦 Install Package
+                    </button>
+                </div>
+
+                <div class="workspace">
+                    <div class="editor-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">⌨️ Code Editor</span>
+                            <div class="panel-actions">
+                                <button class="icon-btn" id="copy-code-btn" title="Copy Code">📋</button>
+                                <button class="icon-btn" id="new-file-btn" title="New File">📄</button>
+                            </div>
+                        </div>
+                        <div class="editor-content">
+                            <textarea id="code-editor" spellcheck="false"># Welcome to PC Py Compiler Ultra Pro! 🚀
+# Start coding here or load a sample from the sidebar
+
+</textarea>
+                        </div>
+                    </div>
+
+                    <div class="output-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">📤 Output</span>
+                            <div class="panel-actions">
+                                <button class="icon-btn" id="copy-output-btn" title="Copy Output">📋</button>
+                                <button class="icon-btn" id="expand-output-btn" title="Expand">⛶</button>
+                            </div>
+                        </div>
+                        <div class="output-tabs">
+                            <button class="output-tab active" data-tab="console">Console</button>
+                            <button class="output-tab" data-tab="plots">Plots</button>
+                            <button class="output-tab" data-tab="errors">Errors</button>
+                        </div>
+                        <div id="console-output" class="output-content active">
+                            <div id="output-area">// Ready to execute Python code...
+// Press "Run Code" or Ctrl+Enter to start</div>
+                        </div>
+                        <div id="plot-area" class="output-content"></div>
+                        <div id="error-output" class="output-content">
+                            <div style="padding: 1rem; color: var(--text-secondary);">
+                                // No errors yet
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-dot" id="python-status"></span>
+                <span id="status-text">Initializing...</span>
+            </div>
+            <div class="status-item">
+                <span id="line-col-info">Ln 1, Col 1</span>
+            </div>
+            <div class="status-item">
+                <span id="exec-time"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Install Package Modal -->
+    <div class="modal" id="install-modal">
+        <div class="modal-content">
+            <div class="modal-header">Install Package</div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label class="input-label">Package Name:</label>
+                    <input type="text" class="input-field" id="package-name" placeholder="e.g., scipy, seaborn">
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">
+                    💡 Popular packages: scipy, seaborn, sympy, pillow
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary btn-small" id="cancel-install">Cancel</button>
+                <button class="btn btn-primary btn-small" id="confirm-install">Install</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+    <script>
+        // Electron API integration
+        if (window.electronAPI) {
+            // Handle menu commands
+            window.electronAPI.onNewFile(() => {
+                if (confirm('Clear current code and start new file?')) {
+                    codeEditor.value = '# New Python file\n\n';
+                    clearOutput();
+                }
+            });
+
+            window.electronAPI.onLoadFile((data) => {
+                codeEditor.value = data.content;
+                showNotification(`Loaded ${data.name}`, 'success');
+            });
+
+            window.electronAPI.onSaveFile(async () => {
+                const content = codeEditor.value;
+                const result = await window.electronAPI.saveFileDialog(content);
+                if (result.success) {
+                    showNotification('File saved successfully!', 'success');
+                }
+            });
+
+            window.electronAPI.onSaveFileAs(async () => {
+                const content = codeEditor.value;
+                const result = await window.electronAPI.saveFileDialog(content);
+                if (result.success) {
+                    showNotification(`Saved as ${result.path}`, 'success');
+                }
+            });
+
+            window.electronAPI.onRunCode(() => {
+                runCode();
+            });
+
+            window.electronAPI.onClearOutput(() => {
+                clearOutput();
+            });
+        }
+    </script>
+    <script>
+        // Global state
+        let pyodide = null;
+        let isInitialized = false;
+        let currentExecutionTime = 0;
+        const plots = [];
+
+        // DOM elements
+        const codeEditor = document.getElementById('code-editor');
+        const outputArea = document.getElementById('output-area');
+        const plotArea = document.getElementById('plot-area');
+        const errorOutput = document.getElementById('error-output');
+        const runBtn = document.getElementById('run-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const formatBtn = document.getElementById('format-btn');
+        const installPkgBtn = document.getElementById('install-pkg-btn');
+        const statusText = document.getElementById('status-text');
+        const pythonStatus = document.getElementById('python-status');
+        const lineColInfo = document.getElementById('line-col-info');
+        const execTime = document.getElementById('exec-time');
+
+        // Initialize Pyodide
+        async function initPyodide() {
+            if (isInitialized) return true;
+            
+            try {
+                statusText.textContent = 'Loading Python runtime...';
+                runBtn.innerHTML = '<span class="spinner"></span> Loading...';
+                runBtn.disabled = true;
+
+                pyodide = await loadPyodide({
+                    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"
+                });
+
+                // Setup Python environment
+                await pyodide.runPythonAsync(`
+                    import sys
+                    import io
+                    import base64
+                    from js import console
+                    
+                    # Redirect stdout and stderr
+                    sys.stdout = io.StringIO()
+                    sys.stderr = io.StringIO()
+                    
+                    # Storage for plots
+                    plot_images = []
+                `);
+
+                // Load essential packages
+                statusText.textContent = 'Loading packages...';
+                await pyodide.loadPackage(['numpy', 'pandas', 'matplotlib']);
+                
+                // Setup matplotlib for web
+                await pyodide.runPythonAsync(`
+                    import matplotlib
+                    matplotlib.use('Agg')
+                    import matplotlib.pyplot as plt
+                    
+                    # Function to capture plots
+                    def save_plot():
+                        import io
+                        import base64
+                        buf = io.BytesIO()
+                        plt.savefig(buf, format='png', dpi=100, bbox_inches='tight')
+                        buf.seek(0)
+                        img_str = base64.b64encode(buf.read()).decode()
+                        plot_images.append(img_str)
+                        buf.close()
+                        plt.close()
+                `);
+
+                isInitialized = true;
+                pythonStatus.classList.remove('warning');
+                statusText.textContent = 'Python ready';
+                runBtn.innerHTML = '▶ Run Code';
+                runBtn.disabled = false;
+                
+                showNotification('Python runtime initialized successfully!', 'success');
+                return true;
+            } catch (error) {
+                console.error('Initialization error:', error);
+                pythonStatus.classList.add('error');
+                statusText.textContent = 'Initialization failed';
+                showNotification('Failed to initialize Python: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        // Run Python code
+        async function runCode() {
+            if (!isInitialized) {
+                const initialized = await initPyodide();
+                if (!initialized) return;
+            }
+
+            const code = codeEditor.value.trim();
+            if (!code) {
+                showNotification('No code to execute', 'warning');
+                return;
+            }
+
+            runBtn.disabled = true;
+            runBtn.innerHTML = '<span class="spinner"></span> Running...';
+            outputArea.textContent = '⟳ Executing...\n';
+            errorOutput.innerHTML = '<div style="padding: 1rem; color: var(--text-secondary);">// No errors</div>';
+            plotArea.innerHTML = '';
+            plots.length = 0;
+
+            const startTime = performance.now();
+
+            try {
+                // Clear previous outputs
+                await pyodide.runPythonAsync(`
+                    sys.stdout = io.StringIO()
+                    sys.stderr = io.StringIO()
+                    plot_images.clear()
+                `);
+
+                // Execute user code
+                await pyodide.runPythonAsync(code);
+
+                // Auto-save any open plots
+                await pyodide.runPythonAsync(`
+                    if plt.get_fignums():
+                        for fig_num in plt.get_fignums():
+                            plt.figure(fig_num)
+                            save_plot()
+                `);
+
+                // Get outputs
+                const stdout = await pyodide.runPythonAsync('sys.stdout.getvalue()');
+                const stderr = await pyodide.runPythonAsync('sys.stderr.getvalue()');
+                const plotData = await pyodide.runPythonAsync('plot_images.copy()');
+
+                // Display console output
+                let output = '';
+                if (stdout) output += '✓ Output:\n' + stdout;
+                if (stderr) output += '\n⚠ Warnings:\n' + stderr;
+                if (!stdout && !stderr) output = '✓ Code executed successfully (no output)';
+                
+                outputArea.textContent = output;
+
+                // Display plots
+                if (plotData && plotData.length > 0) {
+                    plotData.forEach((imgData, idx) => {
+                        const plotContainer = document.createElement('div');
+                        plotContainer.className = 'plot-container';
+                        plotContainer.innerHTML = `
+                            <img src="data:image/png;base64,${imgData}" alt="Plot ${idx + 1}">
+                        `;
+                        plotArea.appendChild(plotContainer);
+                    });
+                    
+                    // Switch to plots tab
+                    document.querySelector('[data-tab="plots"]').click();
+                    showNotification(`Generated ${plotData.length} plot(s)`, 'success');
+                }
+
+                // Display errors if any
+                if (stderr) {
+                    errorOutput.innerHTML = `
+                        <div style="padding: 1rem;">
+                            <div style="color: var(--warning); margin-bottom: 0.5rem;">⚠ Warnings/Errors:</div>
+                            <pre style="color: var(--text-secondary); white-space: pre-wrap;">${stderr}</pre>
+                        </div>
+                    `;
+                }
+
+                const endTime = performance.now();
+                currentExecutionTime = ((endTime - startTime) / 1000).toFixed(2);
+                execTime.textContent = `Executed in ${currentExecutionTime}s`;
+                
+                showNotification('Code executed successfully!', 'success');
+
+            } catch (error) {
+                const endTime = performance.now();
+                currentExecutionTime = ((endTime - startTime) / 1000).toFixed(2);
+                execTime.textContent = `Failed after ${currentExecutionTime}s`;
+
+                outputArea.textContent = '';
+                errorOutput.innerHTML = `
+                    <div style="padding: 1rem;">
+                        <div style="color: var(--error); font-size: 1.1rem; margin-bottom: 1rem;">✗ Execution Error</div>
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 6px; padding: 1rem;">
+                            <pre style="color: var(--error); white-space: pre-wrap; margin: 0;">${error.message}</pre>
+                        </div>
+                    </div>
+                `;
+                
+                // Switch to errors tab
+                document.querySelector('[data-tab="errors"]').click();
+                showNotification('Execution failed', 'error');
+            } finally {
+                runBtn.disabled = false;
+                runBtn.innerHTML = '▶ Run Code';
+            }
+        }
+
+        // Install package
+        async function installPackage(packageName) {
+            if (!isInitialized) {
+                await initPyodide();
+            }
+
+            try {
+                showNotification(`Installing ${packageName}...`, 'warning');
+                await pyodide.loadPackage(packageName);
+                showNotification(`${packageName} installed successfully!`, 'success');
+                return true;
+            } catch (error) {
+                showNotification(`Failed to install ${packageName}: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        // Update cursor position
+        function updateCursorPosition() {
+            const text = codeEditor.value;
+            const cursorPos = codeEditor.selectionStart;
+            const textBeforeCursor = text.substring(0, cursorPos);
+            const lines = textBeforeCursor.split('\n');
+            const line = lines.length;
+            const col = lines[lines.length - 1].length + 1;
+            lineColInfo.textContent = `Ln ${line}, Col ${col}`;
+        }
+
+        // Code samples
+        const samples = {
+            basic: `# Basic Python Examples
+print("Hello, PC Py Compiler Ultra Pro!")
+
+# Variables and data types
+name = "Python"
+version = 3.11
+features = ["fast", "powerful", "easy"]
+
+print(f"{name} {version}")
+print("Features:", ", ".join(features))
+
+# Functions
+def greet(name):
+    return f"Welcome, {name}!"
+
+print(greet("Developer"))`,
+
+            numpy: `# NumPy Array Operations
+import numpy as np
+
+# Create arrays
+arr1 = np.array([1, 2, 3, 4, 5])
+arr2 = np.array([10, 20, 30, 40, 50])
+
+# Operations
+print("Array 1:", arr1)
+print("Array 2:", arr2)
+print("Sum:", arr1 + arr2)
+print("Product:", arr1 * arr2)
+print("Mean:", np.mean(arr1))
+print("Std Dev:", np.std(arr2))
+
+# Matrix operations
+matrix = np.array([[1, 2], [3, 4]])
+print("\\nMatrix:")
+print(matrix)
+print("Determinant:", np.linalg.det(matrix))
+print("Inverse:")
+print(np.linalg.inv(matrix))`,
+
+            pandas: `# Pandas DataFrame Operations
+import pandas as pd
+import numpy as np
+
+# Create DataFrame
+data = {
+    'Name': ['Alice', 'Bob', 'Charlie', 'David', 'Eve'],
+    'Age': [25, 30, 35, 40, 28],
+    'City': ['NYC', 'LA', 'Chicago', 'Houston', 'Phoenix'],
+    'Salary': [70000, 80000, 75000, 90000, 72000]
+}
+
+df = pd.DataFrame(data)
+
+print("Dataset:")
+print(df)
+print("\\nStatistics:")
+print(df.describe())
+print("\\nAverage Salary:", df['Salary'].mean())
+print("\\nGrouped by City:")
+print(df.groupby('City')['Salary'].mean())`,
+
+            matplotlib: `# Matplotlib Plotting
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate data
+x = np.linspace(0, 10, 100)
+y1 = np.sin(x)
+y2 = np.cos(x)
+
+# Create plot
+plt.figure(figsize=(10, 6))
+plt.plot(x, y1, 'b-', linewidth=2, label='sin(x)')
+plt.plot(x, y2, 'r--', linewidth=2, label='cos(x)')
+plt.title('Trigonometric Functions', fontsize=16)
+plt.xlabel('X axis', fontsize=12)
+plt.ylabel('Y axis', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.legend(fontsize=12)
+plt.tight_layout()
+
+print("Plot created successfully!")
+print(f"Data points: {len(x)}")`,
+
+            seaborn: `# Advanced Visualization (requires seaborn)
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Generate sample data
+np.random.seed(42)
+data = {
+    'Category': ['A']*30 + ['B']*30 + ['C']*30,
+    'Value': np.concatenate([
+        np.random.normal(50, 10, 30),
+        np.random.normal(60, 15, 30),
+        np.random.normal(55, 12, 30)
+    ])
+}
+df = pd.DataFrame(data)
+
+# Create visualization
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# Box plot
+categories = df['Category'].unique()
+positions = range(len(categories))
+data_by_cat = [df[df['Category']==cat]['Value'] for cat in categories]
+
+ax1.boxplot(data_by_cat, labels=categories)
+ax1.set_title('Box Plot by Category')
+ax1.set_ylabel('Value')
+ax1.grid(True, alpha=0.3)
+
+# Histogram
+ax2.hist([df[df['Category']==cat]['Value'] for cat in categories], 
+         label=categories, alpha=0.7, bins=15)
+ax2.set_title('Distribution by Category')
+ax2.set_xlabel('Value')
+ax2.set_ylabel('Frequency')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+plt.tight_layout()
+print("Visualization complete!")
+print(df.groupby('Category')['Value'].describe())`,
+
+            algorithm: `# Classic Algorithms
+import time
+
+# Quick Sort
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quick_sort(left) + middle + quick_sort(right)
+
+# Binary Search
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+# Test
+numbers = [64, 34, 25, 12, 22, 11, 90, 88, 45, 50]
+print("Original:", numbers)
+
+sorted_nums = quick_sort(numbers)
+print("Sorted:", sorted_nums)
+
+target = 45
+index = binary_search(sorted_nums, target)
+print(f"\\nBinary search for {target}: Found at index {index}")`,
+
+            ml: `# Machine Learning Demo - Linear Regression
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate synthetic dataset
+np.random.seed(42)
+n_samples = 100
+
+# Linear relationship with noise
+X = np.random.rand(n_samples) * 10
+y = 2.5 * X + 1 + np.random.randn(n_samples) * 2
+
+# Simple linear regression from scratch
+def linear_regression(X, y):
+    """Calculate slope and intercept using least squares method"""
+    X_mean = np.mean(X)
+    y_mean = np.mean(y)
+    
+    # Calculate slope
+    numerator = np.sum((X - X_mean) * (y - y_mean))
+    denominator = np.sum((X - X_mean) ** 2)
+    slope = numerator / denominator
+    
+    # Calculate intercept
+    intercept = y_mean - slope * X_mean
+    
+    return slope, intercept
+
+# Train model
+slope, intercept = linear_regression(X, y)
+y_pred = slope * X + intercept
+
+# Calculate R² score
+ss_res = np.sum((y - y_pred) ** 2)
+ss_tot = np.sum((y - np.mean(y)) ** 2)
+r2_score = 1 - (ss_res / ss_tot)
+
+# Calculate Mean Squared Error
+mse = np.mean((y - y_pred) ** 2)
+rmse = np.sqrt(mse)
+
+# Print results
+print("=" * 50)
+print("LINEAR REGRESSION RESULTS")
+print("=" * 50)
+print(f"Slope (m):           {slope:.4f}")
+print(f"Intercept (b):       {intercept:.4f}")
+print(f"Equation:            y = {slope:.4f}x + {intercept:.4f}")
+print(f"R² Score:            {r2_score:.4f}")
+print(f"RMSE:                {rmse:.4f}")
+print(f"Training samples:    {n_samples}")
+print("=" * 50)
+
+# Visualize results
+plt.figure(figsize=(12, 5))
+
+# Plot 1: Scatter plot with regression line
+plt.subplot(1, 2, 1)
+plt.scatter(X, y, alpha=0.6, color='#00f3ff', edgecolors='#8b5cf6', 
+            linewidth=0.5, s=50, label='Data points')
+
+# Sort X for smooth line plotting
+X_sorted = np.sort(X)
+y_line = slope * X_sorted + intercept
+plt.plot(X_sorted, y_line, 'r-', linewidth=3, 
+         label=f'Fit: y = {slope:.2f}x + {intercept:.2f}')
+
+plt.xlabel('X', fontsize=12, fontweight='bold')
+plt.ylabel('y', fontsize=12, fontweight='bold')
+plt.title(f'Linear Regression (R² = {r2_score:.4f})', 
+          fontsize=14, fontweight='bold')
+plt.legend(fontsize=10)
+plt.grid(True, alpha=0.3, linestyle='--')
+
+# Plot 2: Residuals plot
+plt.subplot(1, 2, 2)
+residuals = y - y_pred
+plt.scatter(y_pred, residuals, alpha=0.6, color='#ff006e', 
+            edgecolors='#8b5cf6', linewidth=0.5, s=50)
+plt.axhline(y=0, color='red', linestyle='--', linewidth=2)
+plt.xlabel('Predicted Values', fontsize=12, fontweight='bold')
+plt.ylabel('Residuals', fontsize=12, fontweight='bold')
+plt.title('Residual Plot', fontsize=14, fontweight='bold')
+plt.grid(True, alpha=0.3, linestyle='--')
+
+plt.tight_layout()
+print("\\n✓ Visualization complete!")`
+        };
+
+        // Load sample
+        document.querySelectorAll('.sample-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const sample = this.dataset.sample;
+                if (samples[sample]) {
+                    codeEditor.value = samples[sample];
+                    showNotification(`Loaded ${this.textContent.trim()} sample`, 'success');
+                }
+            });
+        });
+
+        // Output tabs
+        document.querySelectorAll('.output-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                document.querySelectorAll('.output-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.output-content').forEach(c => c.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(`${tabName === 'console' ? 'console-output' : tabName === 'plots' ? 'plot-area' : 'error-output'}`).classList.add('active');
+            });
+        });
+
+        // Modal handling
+        const installModal = document.getElementById('install-modal');
+        const packageNameInput = document.getElementById('package-name');
+        
+        installPkgBtn.addEventListener('click', () => {
+            installModal.classList.add('active');
+            packageNameInput.focus();
+        });
+
+        document.getElementById('cancel-install').addEventListener('click', () => {
+            installModal.classList.remove('active');
+            packageNameInput.value = '';
+        });
+
+        document.getElementById('confirm-install').addEventListener('click', async () => {
+            const packageName = packageNameInput.value.trim();
+            if (packageName) {
+                installModal.classList.remove('active');
+                await installPackage(packageName);
+                packageNameInput.value = '';
+            }
+        });
+
+        // Copy functionality
+        document.getElementById('copy-code-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(codeEditor.value);
+            showNotification('Code copied to clipboard!', 'success');
+        });
+
+        document.getElementById('copy-output-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(outputArea.textContent);
+            showNotification('Output copied to clipboard!', 'success');
+        });
+
+        // Download code
+        document.getElementById('download-btn').addEventListener('click', () => {
+            const blob = new Blob([codeEditor.value], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'code.py';
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Code downloaded!', 'success');
+        });
+
+        // Upload code
+        document.getElementById('upload-btn').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.py,.txt';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    codeEditor.value = event.target.result;
+                    showNotification(`Loaded ${file.name}`, 'success');
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        });
+
+        // Clear output
+        clearBtn.addEventListener('click', () => {
+            outputArea.textContent = '// Output cleared...';
+            plotArea.innerHTML = '';
+            errorOutput.innerHTML = '<div style="padding: 1rem; color: var(--text-secondary);">// No errors</div>';
+            execTime.textContent = '';
+            showNotification('Output cleared', 'success');
+        });
+
+        // Format code (basic)
+        formatBtn.addEventListener('click', () => {
+            let code = codeEditor.value;
+            // Basic formatting
+            code = code.replace(/\t/g, '    '); // Replace tabs with spaces
+            codeEditor.value = code;
+            showNotification('Code formatted', 'success');
+        });
+
+        // Event listeners
+        runBtn.addEventListener('click', runCode);
+        codeEditor.addEventListener('input', updateCursorPosition);
+        codeEditor.addEventListener('click', updateCursorPosition);
+        codeEditor.addEventListener('keyup', updateCursorPosition);
+
+        // Keyboard shortcuts
+        codeEditor.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                runCode();
+            }
+            
+            // Tab key handling
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = codeEditor.selectionStart;
+                const end = codeEditor.selectionEnd;
+                codeEditor.value = codeEditor.value.substring(0, start) + '    ' + codeEditor.value.substring(end);
+                codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+            }
+        });
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        pythonStatus.classList.add('warning');
+        
+        // Auto-initialize on first interaction
+        let initStarted = false;
+        function startInit() {
+            if (!initStarted) {
+                initStarted = true;
+                initPyodide();
+            }
+        }
+        
+        codeEditor.addEventListener('focus', startInit, { once: true });
+        runBtn.addEventListener('mouseenter', startInit, { once: true });
+    </script>
+</body>
+</html>
